@@ -1,0 +1,90 @@
+<html lang="en">
+<head>
+    <%- include('./partials/head') %>
+    <!-- <link rel="stylesheet" href="css/nav.css"> -->
+</head>
+<style>
+    body{
+        margin: 0;
+        padding: 0;
+        min-height: 70vh;
+    }
+</style>
+<body>
+   <%- include('./partials/nav.ejs', {user:user}) %>
+
+   <% allUserTickets.forEach(ticket => { %>
+    <% if (ticket.status!=="cancelled") { %>
+        <%- include('./partials/userTicket.ejs', {ticket, userId:user._id}) %>
+    <% } %>
+   <% }) %>
+
+
+
+<script>
+    const userId='<%= user._id %>'
+    console.log(userId);
+    // const socket = io('/user-namespace');
+    const allUserTickets= <%- JSON.stringify(allUserTickets) %>
+    // console.log(allUserTickets);
+
+    // const button=document.getElementById('button')
+//    const allUserTickets= await (await fetch('/user/ticket/all-tickets')).json();
+//    console.log(allUserTickets);
+// document.getElementById("").addEventListener('click' , (event)=>{
+//     notificationPopup.classList.add('hidden');
+//     displayNotifications();
+
+//   });
+//   function displayNotifications(){
+
+//   }
+
+    document.body.addEventListener("click",async (e)=>{
+        console.log(e.target.id,"=id");
+        console.log(e.target.innerText,"=text");
+        if(e.target.innerText=="Cancel-Ticket"){
+                try {
+                    const res=await fetch(`/user/ticket/cancel/${e.target.id}`, {
+                        method: 'put',
+                    });
+                    // console.log('%chome.ejs line:37 res', 'color: #007acc;', await res.json());
+                    const ticket=await res.json()
+                    document.getElementById(e.target.id).remove()
+                } catch (error) {
+                    res.end(error)
+                }
+        }
+    });
+    //  async function fetchAllUserTickets() {
+    //         try {
+    //             console.log('%chome.ejs line:46 3', 'color: #007acc;', 3);
+    //             fetch('/user/ticket/all-tickets', { method: 'get' }).then(function(response){
+    //                 return response.json();
+    //             }).then(function(tickets){
+    //                    displayAllUserTickets(tickets)
+    //             }).catch(function(err){
+    //                 console.log(err);
+    //             }); 
+    //         } catch (error) {
+    //             console.log('%chome.ejs line:54 error', 'color: #007acc;', error);
+    //         }
+    //     }
+        // Listen for updates from the server
+    // socket.on('ticketUpdated', (data) => {
+    //     // Find the ticket container by its ID
+    //     const ticketContainer = document.getElementById("${data.ticket_id}");
+
+    //     // Update the class of the ticket container based on has_unread_messages
+    //     if (data.has_unread_messages === 1) {
+    //         ticketContainer.classList.add('ticket-seen');
+    //     } else {
+    //         ticketContainer.classList.remove('ticket-seen');
+    //     }
+    // });
+</script>
+
+
+
+</body>
+</html>

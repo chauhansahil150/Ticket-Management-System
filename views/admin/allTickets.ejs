@@ -1,0 +1,295 @@
+<html lang="en">
+
+<head>
+    <%- include('../partials/head') %>
+        <!-- <link rel="stylesheet" href="css/nav.css"> -->
+</head>
+<link rel="stylesheet" href="/css/adminTicket.css">
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    /* Navigation styles (you can include your existing navbar styles here) */
+    /* ... */
+
+    #ribbon {
+        display: flex;
+        flex-direction: row;
+        background-color: #333;
+        color: #fff;
+        padding: 10px;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    #ribbon div {
+        margin-right: 20px;
+    }
+
+    #ribbon select,
+    #ribbon input[type="search"],
+    #ribbon input[type="button"] {
+        padding: 5px;
+        margin-right: 10px;
+        border: none;
+        border-radius: 3px;
+    }
+
+    #ribbon select {
+        background-color: #555;
+        color: #fff;
+    }
+
+   
+    /* Add your desired styles for the notification popup here */
+</style>
+
+
+<body>
+    
+    <%- include('../partials/nav.ejs', {user:user}) %>
+        <div id="ribbon">
+            <div>
+                filter
+                <select id="filter" name="filter">
+                    <%filter.forEach((value, index)=> { %>
+                        <option value="<%= value %>" <% if (index === 0) { %>selected<% } %>>
+                            <%= value %>
+                        </option>
+                        <% }) %>
+                </select>
+            </div>
+            <div>
+                Sort
+                <select id="sorting" name="sorting">
+                    <option value="Time ASC">
+                        Time ASC
+                    </option>
+                    <option value="Time DSC">
+                        Time DSC
+                    </option>
+                    <!-- <option value="Priority DESC">
+                        Priority DESC
+                    </option> -->
+                </select>
+            </div>
+            <div>
+                <input type="search" id="search" name="search" placeholder="Search..">
+                <input type="button" id="searchBt" name="searchBt" value="Search">
+            </div>
+        </div>
+        <div id="container">
+        <% allTickets.forEach(ticket=> { %>
+            <% if (ticket.status==="pending" ) { %>
+                <%- include('../partials/adminTicket.ejs', {ticket}) %>
+                    <% } %>
+                        <% }) %>
+        </div>
+
+
+<script>
+
+
+    window.addEventListener('load', function() {
+    const filterSelect = document.getElementById('filter');
+    filterSelect.selectedIndex = 0;
+    });
+    var allTicketsData =<%- JSON.stringify(allTickets) %>;
+    const filter = document.getElementById('filter');
+    const sorting = document.getElementById('sorting');
+    const container = document.getElementsByClassName("container");
+    const searchBt=document.getElementById('searchBt');
+    const search=document.getElementById('search');
+    // allTickets.forEach(ticket => {
+    //     displayTickets(ticket);
+    // });
+
+    function displayTickets(ticket) {
+
+    const container = document.getElementById('container');
+    // Create the ticket container element
+    const ticketDiv = document.createElement('div');
+    ticketDiv.classList.add('ticket-container');
+    ticketDiv.id = ticket._id;
+
+    // Create and append the title element
+    const titleP = document.createElement('p');
+    titleP.textContent = `Title: ${ticket.title}`;
+    ticketDiv.appendChild(titleP);
+
+    // Create and append the issue type element
+    const issueTypeP = document.createElement('p');
+    issueTypeP.textContent = `Issue Type: ${ticket.issueType}`;
+    ticketDiv.appendChild(issueTypeP);
+
+    // Create and append the priority element
+    const priorityP = document.createElement('p');
+    priorityP.textContent = `Priority: ${ticket.priority}`;
+    ticketDiv.appendChild(priorityP);
+
+    // Create and append the description element
+    const descriptionP = document.createElement('p');
+    descriptionP.textContent = `Description: ${ticket.description}`;
+    ticketDiv.appendChild(descriptionP);
+
+    // Create and append the start time element
+    const startTimeP = document.createElement('p');
+    startTimeP.textContent = `Start Time: ${ticket.startTime}`;
+    ticketDiv.appendChild(startTimeP);
+
+    // Create and append the end time element
+    const endTimeP = document.createElement('p');
+    endTimeP.textContent = `End Time: ${ticket.endTime}`;
+    ticketDiv.appendChild(endTimeP);
+
+    // Create the status container
+    const statusDiv = document.createElement('div');
+    statusDiv.classList.add('status');
+
+    // Check ticket status and create corresponding button(s)
+    if (ticket.status === "pending") {
+        const resolveButton = document.createElement('button');
+        resolveButton.id = ticket._id;
+        resolveButton.textContent = 'Resolve';
+        statusDiv.appendChild(resolveButton);
+    } else if (ticket.status === 'opened') {
+        const closeButton = document.createElement('button');
+        closeButton.id = ticket._id;
+        closeButton.textContent = 'Close';
+        statusDiv.appendChild(closeButton);
+
+        const chatLink = document.createElement('a');
+        chatLink.href = `/chat/ticket/chatPage/${ticket.createdBy}-${ticket._id}`;
+        const chatButton = document.createElement('button');
+        chatButton.id = ticket.createdBy;
+        chatButton.textContent = 'Chat';
+        chatLink.appendChild(chatButton);
+        statusDiv.appendChild(chatLink);
+    }
+
+    // Create and append the ticket status paragraph
+    const statusP = document.createElement('p');
+    statusP.classList.add('ticket-status');
+    statusP.textContent = `Status: ${ticket.status}`;
+    statusDiv.appendChild(statusP);
+
+    // Append the status container to the ticket container
+    ticketDiv.appendChild(statusDiv);
+
+    // Append the ticket container to the main container
+    container.appendChild(ticketDiv);
+}
+
+// Usage example:
+// const ticketData = { _id: '123', title: 'Sample Ticket', issueType: 'Technical', priority: 'High', description: 'Sample description', startTime: '2023-09-07', endTime: '2023-09-08', status: 'opened', createdBy: 'user123' };
+// displayTicket(ticketData);
+
+
+    document.body.addEventListener("click", async (e) => {
+        // console.log(e.target.id, "=id");
+        // console.log(e.target.innerText, "=text");
+        if (e.target.innerText === "Resolve") {
+            try {
+                const res = await fetch(`/admin/ticket/resolve/${e.target.id}`, {
+                    method: 'put',
+                });
+                // console.log('%chome.ejs line:37 res', 'color: #007acc;', await res.json());
+                const ticket = await res.json()
+                document.getElementById(e.target.id).remove()
+                // e.target.innerText="Close-Ticket";
+            } catch (error) {
+                res.end(error)
+            }
+        }
+
+    });
+    filter.addEventListener("change", async (e) => {
+        // fetch("/admin/tickets/filterby/" + filter.value, { redirect: 'follow' })
+        //     .then((res) => { location.href = res.url })
+        //     .catch(err => { console.log(err) })
+        // console.log(filter.value);
+        const sortingValue=(sorting.value);
+        const filterValue=(e.target.value);
+        // const res=await fetch(`/admin/tickets/filterby/${ filterValue}-${sortingValue}` )
+        // console.log(res);
+        // const tickets=await res.json();
+        // console.log(tickets);
+
+        if(filterValue==="All"){
+            tickets=allTicketsData;
+        }else{
+            tickets=allTicketsData.filter((data)=> data.issueType===filterValue)
+        }
+        if (sortingValue === "Time ASC") {
+    tickets.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+} else if (sortingValue === "Time DSC") {
+    tickets.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+}
+
+        document.getElementById('container').innerHTML="";
+        // allTicketsData=tickets;
+        tickets.forEach(ticket => {
+            displayTickets(ticket);
+        });
+    })
+    
+    sorting.addEventListener("change", async (e) => {
+        const filterValue=(filter.value);
+        const sortingValue=(e.target.value);
+        // const res=await fetch(`/admin/tickets/filterby/${filterValue}-${ sortingValue}` )
+        // const tickets=await res.json();
+        // console.log(tickets);
+         
+        if(filterValue==="All"){
+            tickets=allTicketsData;
+        }else{
+            tickets=allTicketsData.filter((data)=> data.issueType===filterValue)
+        }
+        if (sortingValue === "Time ASC") {
+        tickets.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        } else if (sortingValue === "Time DSC") {
+            tickets.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        }
+
+        document.getElementById('container').innerHTML="";
+        // allTicketsData=tickets;
+        tickets.forEach(ticket => {
+            displayTickets(ticket);
+        });
+    });
+    searchBt.addEventListener('click', ()=>{
+        searchValue=search.value;
+        const filterValue=filter.value;
+
+         const tickets = allTicketsData.filter((data) => {
+    return (
+        data.issueType.includes(searchValue) ||
+        data.title.includes(searchValue) || // Assuming you want to filter based on partial title match
+        data.description.includes(searchValue) ||  // Assuming you want to filter based on partial description match
+        data.priority.includes(searchValue)   // Assuming you want to filter based on partial description match 
+    );
+});
+        
+document.getElementById('container').innerHTML="";
+        tickets.forEach(ticket => {
+            displayTickets(ticket);
+        });
+
+    });
+
+//    document.getElementById("chat-button").addEventListener('click', function(event){
+//     ticketData=event.target.getAttribute('ticket-data');
+//     console.log(ticketData);;
+//    })
+
+</script>
+
+</body>
+
+</html>

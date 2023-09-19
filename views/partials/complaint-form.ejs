@@ -1,0 +1,163 @@
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0; /* Background color for the entire page */
+    font-family: Arial, sans-serif; /* Use a web-safe font */
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.complaint-form {
+    width: 40%; /* Adjust the form width as needed */
+    padding: 20px;
+    background-color: #fff; /* Form background color */
+    border-radius: 10px; /* Rounded corners for the form */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Box shadow for a subtle elevation effect */
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    font-weight: bold;
+}
+
+input[type="text"],
+select,
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc; /* Add a border to input fields */
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+select {
+    appearance: none; /* Remove default dropdown arrow in select boxes */
+}
+
+#submit {
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    color: white;
+    background-color: cadetblue;
+    cursor: pointer; /* Show a pointer cursor on hover */
+    transition: background-color 0.3s; /* Add a smooth transition on hover */
+}
+
+#submit:hover {
+    background-color: #357e82; /* Change the background color on hover */
+}
+
+.error {
+    color: red;
+    font-size: 14px;
+}
+
+/* Center the error messages */
+.error {
+    text-align: center;
+    margin-top: 5px;
+}
+
+/* Optional: Style the h4 header */
+h4 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333; /* Choose an appropriate text color */
+}
+
+
+</style>
+<div class="container">
+    <form action="/user/ticket/create-new" method="post" class="complaint-form" onsubmit="return validateForm()">
+        <h4 style="text-align: center;">Complaint Form</h4>
+        <% if (category) { %>
+        <div class="form-group">
+            <label for="category">Issue Type: </label>
+            <select name="category" id="category">
+                <% category.forEach(value => { %>
+                <option value="<%= value %>">
+                    <%= value %>
+                </option>
+                <% }) %>
+            </select>
+        </div>
+        <% } %>
+        <div class="form-group">
+            <input type="text" name="title" id="title" placeholder="Title">
+            <p id="titleError" class="error"></p>
+        </div>
+
+        <div class="form-group">
+            <label for="priority">Priority: </label>
+            <select name="priority" id="priority">
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+            </select>
+            <p id="priorityError" class="error"></p>
+        </div>
+
+        <div class="form-group">
+            <textarea name="desc" id="desc" cols="30" rows="10" placeholder="Write your issue here..."></textarea>
+            <p id="descError" class="error"></p>
+        </div>
+        <div class="form-group">
+            <input type="submit" name="submit" id="submit" value="Register Complaint">
+        </div>
+    </form>
+</div>
+
+<script>
+    function validateForm() {
+        const title = document.getElementById('title').value.trim();
+        const priority = document.getElementById('priority').value;
+        const desc = document.getElementById('desc').value.trim();
+        const titleError = document.getElementById('titleError');
+        const priorityError = document.getElementById('priorityError');
+        const descError = document.getElementById('descError');
+
+        // Reset previous error messages
+        titleError.textContent = '';
+        priorityError.textContent = '';
+        descError.textContent = '';
+
+        let isValid = true;
+
+        // Validate title
+        if (title === '') {
+            titleError.textContent = 'Title is required';
+            isValid = false;
+        }
+
+        // Validate priority
+        if (priority === '') {
+            priorityError.textContent = 'Priority is required';
+            isValid = false;
+        }
+
+        // Validate description
+        if (desc === '') {
+            descError.textContent = 'Description is required';
+            isValid = false;
+        }
+
+        // Prevent form submission if not valid
+        if (!isValid) {
+            return false;
+        }
+
+        // If all fields are valid, the form will submit
+        return true;
+    }
+</script>

@@ -1,0 +1,43 @@
+<html lang="en">
+
+<head>
+    <%- include('./partials/head') %>
+        <link rel="stylesheet" href="css/nav.css">
+</head>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+    }
+</style>
+
+<body>
+    <%- include('./partials/nav.ejs', {user:user}) %>
+
+        <% allUserTickets.forEach(ticket=> { %>
+            <% if (ticket.status=="cancelled" ) { %>
+                <%- include('./partials/userTicket.ejs', {ticket}) %>
+            <% } %>
+        <% }) %>
+
+<script>
+   document.body.addEventListener("click", async (e) => {
+        console.log(e.target.id, "=id");
+        console.log(e.target.innerText, "=text");
+        if (e.target.innerText === "Delete-Ticket") {
+            try {
+                const res = await fetch(`/user/ticket/delete/${e.target.id}`, {
+                    method: 'delete',
+                });
+                // console.log('%chome.ejs line:37 res', 'color: #007acc;', await res.json());
+                const ticket = await res.json()
+                document.getElementById(e.target.id).remove()
+            } catch (error) {
+                res.end(error)
+            }
+        }
+    });
+</script>
+</body>
+
+</html>

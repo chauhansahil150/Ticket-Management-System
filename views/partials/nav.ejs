@@ -1,0 +1,127 @@
+<style>
+  /* Base styles for the navbar */
+.navbar {
+  background-color: black;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 20px;
+  font-family: Arial, sans-serif;
+}
+
+.navbar a {
+  color: #fff;
+  text-decoration: none;
+  margin-right: 20px;
+  font-weight: bold;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .navbar a {
+    margin: 5px 0;
+  }
+
+  .rightNavItems {
+    margin-top: 20px;
+  }
+
+  /* Show the Role and Dept only for resolver role in small screens */
+  .leftNavItems a:nth-child(4),
+  .leftNavItems a:nth-child(5) {
+    display: block;
+    pointer-events: auto;
+    margin: 5px 0;
+  }
+}
+
+/* Styles for the notification popup */
+#notificationPopup {
+  position: fixed;
+  top: 0;
+  right: 0;
+  background-color: #fff;
+  padding: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  display: none;
+  z-index: 999;
+}
+
+.notification-bar {
+  margin-top: 10px;
+}
+
+/* Media query for small screens */
+@media screen and (max-width: 768px) {
+  #notificationPopup {
+    width: 100%;
+  }
+}
+
+</style>
+<nav class="navbar">
+  <span class="leftNavItems">
+    <% if (user.role==="USER") { %>
+      <a href="/">Home</a>
+      <a href="/user/ticket/create-new">Create Ticket</a>
+      <a href="/user/ticket/cancelled">Cancelled Ticket</a>
+      <a style="pointer-events: none;">Role:<%=user.role%></a>
+      <% } else if(user.role==="admin") { %>
+        <a href="/admin/tickets">Home</a>
+        <a href="/admin/register">add Employee</a>
+        <a href="/admin/tickets/opened">Opened Tickets</a>
+        <a href="/admin/tickets/closed">Closed Tickets</a>
+        <a style="pointer-events: none;">Role:<%=user.role%></a>
+      <% } else if(user.role==="resolver") { %>
+        <a href="/resolver/tickets">Home</a>
+        <a href="/resolver/tickets/opened">Opened Tickets</a>
+        <a href="/resolver/tickets/closed">Closed Tickets</a>
+        <a style="pointer-events: none;">Role:<%=user.role%></a>
+        <a style="pointer-events: none;">Dept:<%= user.dept %></a>
+        <!-- <a href="">Tickets</a> -->
+    <% } %>
+   
+  </span>  
+  <span class="rightNavItems">
+    <span>Hi, <%= user.name %></span>
+    <!-- <a href="/">Profile</a> -->
+    <a href="/logout">Logout</a>
+    <span id="showNotification">Show Notification</span>
+      
+  </span>
+</nav>
+<div id="notificationPopup" class="hidden">
+  <div style="display: flex; justify-content: space-between;">
+    <span>Chat Notification!</span>
+  <button style="padding: 3px;" id="closeNotification">X</button>
+  </div>
+ <div class="notification-bar">
+  <p id="hello">hi</p>
+  <p>sjkjs</p>
+  <p>jskjks</p>
+ </div>
+ 
+</div>
+
+<script>
+
+  const showNotificationButton = document.getElementById('showNotification');
+  const closeNotificationButton = document.getElementById('closeNotification');
+  const notificationPopup = document.getElementById('notificationPopup');
+
+  showNotificationButton.addEventListener('click', () => {
+      notificationPopup.style.right = '0';
+      notificationPopup.classList.remove('hidden');
+      
+  });
+
+  closeNotificationButton.addEventListener('click', () => {
+      notificationPopup.style.right = '-300px'; // Slide the popup off-screen
+      notificationPopup.classList.add('hidden');
+  });
+</script>

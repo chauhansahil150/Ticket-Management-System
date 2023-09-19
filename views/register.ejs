@@ -1,0 +1,59 @@
+<html lang="en">
+<head>
+   <%- include('./partials/head.ejs') %>
+   <link rel="stylesheet" href="css/register.css">
+</head>
+<body>
+    <div class="container">
+        <div class="register-container">
+            <%- include('./partials/message.ejs') %>
+           <form class="register-form" action="register" method="post" onsubmit="return validateForm()">
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" name="name" id="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" name="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" name="password" id="password" required>
+                    <p id="passwordError" class="error"></p>
+                </div>
+                <div class="form-link">
+                    <button type="submit">Register</button>
+                </div>
+                <div class="form-link">
+                    <p>Already have an account? <a href="/login">Login</a></p>
+                </div>
+           </form>
+        </div>
+    </div>
+    <script>
+        function validateForm() {
+            const password = document.getElementById('password').value;
+
+            // Regular expressions for validation
+            const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+            const numberRegex = /[0-9]/;
+            const capitalLetterRegex = /[A-Z]/;
+
+            const passwordError = document.getElementById('passwordError');
+            passwordError.textContent = ''; // Clear previous error message
+
+            let isValid = true;
+
+            if (password.length < 8) {
+                passwordError.textContent = 'Password must be at least 8 characters long';
+                isValid = false;
+            } else if (!specialCharRegex.test(password) || !numberRegex.test(password) || !capitalLetterRegex.test(password)) {
+                passwordError.textContent = 'Password must contain special characters, numbers, and capital letters';
+                isValid = false;
+            }
+
+            return isValid;
+        }
+    </script>
+</body>
+</html>

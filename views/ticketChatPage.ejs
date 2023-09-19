@@ -1,0 +1,203 @@
+<%- include('./partials/header') %>
+<style>
+    .ticketDetail{
+        width: 100%;
+        background-color: bisque;
+        text-align: center;
+    }
+    ticketDetail p{
+        color: #007bff
+    }
+    /* Chat container styles */
+.chat-container {
+  background-color: #f0f0f0;
+  width: 100%;
+  height: calc(100% - 100px); /* Adjust the height as needed */
+  overflow-y: auto;
+  padding: 10px;
+}
+
+/* Chat input form styles */
+#chat-form {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  padding: 10px;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2); /* Add a shadow to separate the form */
+}
+
+#message {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Style for icons */
+.fa {
+  cursor: pointer;
+  font-size: 18px;
+  margin-left: 5px;
+}
+
+</style>
+<body>
+    <a href="/dashboard"><span class="fa fa-home mr-3"></span> Dashboard</a>
+    <!-- <h3 class="start-head">Click to Start the chat</h3> -->
+    <!-- <div class="start-head">Click</div> -->
+    <div class="ticketDetail">
+        <p>Title:<%= ticketData.title %></p>
+    </div>
+    <div class="chat-section">
+        <div class="chat-container">
+
+            <!-- <div class="distance-user-chat">
+                                <p>User</p>
+                            </div>
+                            <div class="current-user-chat">
+                                <p>User</p>
+                            </div> -->
+        </div>
+        <form action="" id="chat-form">
+            <input type="text" name="message" id="message" placeholder="Enter message" required class="border">
+            <button type="submit" class="btn btn-primary">Send</button>
+        </form>
+    </div>
+<%- include('./partials/footer') %>
+    <script src="/socket.io/socket.io.js"></script>
+    
+
+        <script>
+        const senderId = '<%= senderId %>';
+        const receiverId = '<%= receiverId %>';
+        const ticketId='<%= ticketData._id %>';
+        // const openedBy='<%= ticketData.chat.opened_by %>';
+
+        // function fetchChatSeenStatus() {
+        // fetch('/chat/seen-status/${openedBy}-${receiverId}', {
+        //     method: "put"
+        // })
+        //     .then((res) => res.json())
+        //     .catch(err => console.log(err));
+        // }
+        // window.addEventListener('load',fetchChatSeenStatus)
+        // window.addEventListener('beforeunload', (event)=>{
+        //     fetchChatSeenStatus();
+        //     event.preventDefault();
+        //     event.returnValue='';
+        // });
+
+        $(document).ready(function () {
+                    $('.chat-section').show();
+                    socket.emit("exitsChat", { sender_id: senderId, receiver_id: receiverId,ticket_id:ticketId });
+            });
+         const socket = io('/user-namespace', {
+                auth: {
+                    sender_id: senderId,
+                    receiver_id:receiverId,
+                    ticket_id:ticketId,
+                }
+            });
+
+                   $('#chat-form').submit(function (event) {
+                        event.preventDefault();
+
+                        const message = $('#message').val().trim();
+                        if(message==''){
+                            alert("Please enter message");
+                            return;
+                        }
+
+                        $.ajax({
+                            url: '/chat/save-chat',
+                            type: 'post',
+                            data: {
+                                sender_id: senderId,
+                                receiver_id: receiverId,
+                                message: message,
+                                ticket_id:ticketId
+                            },
+                            success: function (res) {
+                                console.log(res);
+                                if (res.success) {
+                                    console.log(res);
+                                    $('#message').val('');
+                                    let chatMessage = res.data.message;
+                                    let html = `
+                                    <div class="current-user-chat" id="${res.data._id}">
+                               <p>`+ chatMessage + `</p>
+                                </div>
+                                `;
+                                    $('.chat-container').append(html);
+                                    socket.emit('newChat', res.data);
+                                    
+                                    scrollChat();
+                                } else {
+                                    alert(res.msg);
+                                }
+
+                            }
+                        });
+                    });
+                
+        socket.on('loadNewChat', function (data) {
+                    if (senderId === data.receiver_id && receiverId === data.sender_id && ticketId===data.ticket_id ) {
+                        let html = ` <div class="distance-user-chat" id="${data._id}">
+        <p>`+ data.message + `</p>
+        </div> `;
+                        $('.chat-container').append(html);
+
+                    }
+                    scrollChat();
+
+                });
+                //load old chats
+                socket.on("loadChats", function (data) {
+                    $('.chat-container').html('');
+                    const chats = data.chats;
+                    let html = '';
+                    chats.forEach(chat => {
+                        let addClass = '';
+                        if (chat.sender_id == senderId) {
+                            addClass = 'current-user-chat';
+                        } else {
+                            addClass = 'distance-user-chat'
+                        }
+                        html += ` 
+        <div class="${addClass}" id="${chat._id}">
+        <p>`+ chat.message + `</p>
+             `;
+            //             if (chat.sender_id == senderId) {
+            //                 html += ` 
+            // <i class="fa fa-trash" aria-hidden="true" style="color: red;" data-id="${chat._id}"  data-toggle="modal" data-target="#delete-chat-model"></i>
+            // <i class="fa fa-edit" aria-hidden="true" style="color: red;" data-id="${chat._id}" data-msg="${chat.message}"  data-toggle="modal" data-target="#edit-chat-model"></i>
+            //         `;
+            //             }
+                        html += `</div> `;
+                    });
+                    $('.chat-container').append(html);
+                    scrollChat();
+                })
+
+                function scrollChat() {
+                    $('.chat-container').animate({
+                        scrollTop: $('.chat-container').offset().top + $('.chat-container')[0].scrollHeight
+                    }, 0);
+
+                }
+             
+           
+               
+       </script>
+
+

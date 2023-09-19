@@ -1,0 +1,197 @@
+<html lang="en">
+
+<head>
+    <%- include('../partials/head.ejs') %>
+        <link rel="stylesheet" href="css/register.css">
+<style>
+    /* Base styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.register-form {
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    select {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        max-width: 100%;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    select {
+        font-size: 12px;
+    }
+}
+
+/* Button styles */
+button[type="submit"] {
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 12px 20px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* Validation error message */
+.error-message {
+    color: #ff0000;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+/* Links */
+a {
+    text-decoration: none;
+    color: #007BFF;
+}
+
+/* Centered content */
+.centered-content {
+    text-align: center;
+}
+
+</style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="register-container">
+            <%- include('../partials/message.ejs') %>
+                <form class="register-form" action="" register" method="post" onsubmit="return validateForm()">
+                    <div class="form-group">
+                        <label for="name">Name:</label>
+                        <input type="text" name="name" id="name">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" name="email" id="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input type="password" name="password" id="password">
+                    </div>
+                    <p id="passwordError" class="error" style="color: #ff0000;"></p> <!-- Display password error message -->
+                    <div class="form-group">
+                        <label for="role">Role:</label>
+                        <select name="role" id="role">
+                            <% roles.forEach(value => { %>
+                                <option value="<%= value %>">
+                                <%= value %>
+                                </option>
+                            <% }) %>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="dept">Dept:</label>
+                        <select name="dept" id="dept">
+                            <% allDept.forEach(value=> { %>
+                                <option value="<%= value %>">
+                                    <%= value %>
+                                </option>
+                                <% }) %>
+                        </select>
+                    </div>
+                    <div class="form-link">
+                        <button type="submit">register</button>
+                    </div>
+
+                </form>
+        </div>
+    </div>
+
+    
+<script>
+
+    function validateForm() {
+        // Get the form elements
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const role = document.getElementById('role').value;
+        const dept = document.getElementById('dept').value;
+
+        // Add your validation logic here
+        // For example, you can check if the fields are not empty and meet your criteria
+
+        if (name === '' || email === '' || password === '' || role === '' || dept === '') {
+            alert('Please fill in all fields.');
+            return false; // Prevent form submission
+        }
+
+// Password pattern for minimum 8 characters, including special characters, numbers, and capital letters
+const passwordPattern = /^(?=.*[!@#$%^&*])(?=.*\d)(?=.*[A-Z]).{8,}$/;
+
+const passwordError = document.getElementById('passwordError');
+
+if (!passwordPattern.test(password)) {
+    passwordError.textContent = 'Password must contain at least 8 characters, including special characters, numbers, and capital letters.';
+    return false; // Prevent form submission
+}
+
+// Clear any previous error messages
+passwordError.textContent = '';
+
+        // You can add more specific validation rules here for password, email format, etc.
+
+        return true; // Allow form submission if all validation passes
+    }
+
+
+</script>
+
+</body>
+
+</html>

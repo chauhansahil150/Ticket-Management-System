@@ -1,0 +1,27 @@
+<html lang="en">
+
+<head>
+    <%- include('../partials/head') %>
+        <link rel="stylesheet" href="css/nav.css">
+</head>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+    }
+</style>
+
+<body>
+    <%- include('../partials/nav.ejs', {user:user}) %>
+
+        <% allClosedTickets.forEach(ticket=> { %>
+            <%# if (ticket.status=="closed" ) { %>
+                <%- include('../partials/resolverTicket.ejs', {ticket}) %>
+                    <%# } %>
+                        <% }) %>
+    
+                       
+
+</body>
+
+</html>

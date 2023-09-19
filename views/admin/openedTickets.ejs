@@ -1,0 +1,46 @@
+<html lang="en">
+
+<head>
+    <%- include('../partials/head') %>
+        <link rel="stylesheet" href="css/nav.css">
+        <link rel="stylesheet" href="/css/adminTicket.css">
+
+</head>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+    }
+</style>
+
+<body>
+    <%- include('../partials/nav.ejs', {user:user}) %>
+
+        <% allOpenedTickets.forEach(ticket=> { %>
+            <%#if (ticket.status=="opened" ) { %>
+                <%- include('../partials/adminTicket.ejs', {ticket}) %>
+                    <%# } %>
+                        <% }) %>
+<script>
+    document.body.addEventListener("click", async (e) => {
+        console.log(e.target.id, "=id");
+        console.log(e.target.innerText, "=text");
+        if (e.target.innerText === "Close") {
+            try {
+                const res = await fetch(`/admin/ticket/close/${e.target.id}`, {
+                    method: 'put',
+                });
+                // console.log('%chome.ejs line:37 res', 'color: #007acc;', await res.json());
+                const ticket = await res.json();
+                console.log('%copenedTickets.ejs line:33 ticket.status', 'color: #007acc;', ticket.status);
+                document.getElementById(e.target.id).remove()
+                // e.target.innerText="Close-Ticket";
+            } catch (error) {
+                res.end(error)
+            }
+        }
+    });
+</script>
+</body>
+
+</html>

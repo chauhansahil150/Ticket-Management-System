@@ -1,0 +1,29 @@
+<div class="<%= (( ticket.chat.has_unread_messages == 1 && parseInt(ticket.chat.sender_id) === parseInt(ticket.createdBy)))? 'ticket-container ticket-seen' : 'ticket-container' %>" id=" ticket-container ">
+    <% if(ticket.chat.has_unread_messages == 1 && parseInt(ticket.chat.sender_id) === parseInt(ticket.createdBy)){ %>
+        <span style="color: red; float: right; font-size: small">You have <%= ticket.chat.unread_messages_length %> unread message</span>
+    <% } %>
+        <p>Title: <%= ticket.title %>
+        </p>
+        <p>Issue Type: <%= ticket.issueType %>
+        </p>
+        <p>Priority: <%= ticket.priority %>
+        </p>
+        <p>Description: <%= ticket.description %>
+        </p>
+        <p>Start Time: <%= ticket.startTime %>
+        </p>
+        <p>End Time: <%= ticket.endTime %>
+        </p>
+        <div class="status">
+            <% if (ticket.status==="pending" ) { %>
+                <button id="<%= ticket._id %>">Resolve</button>
+                <%} else if(ticket.status==='opened' ) { %>
+                    <button id="<%= ticket._id %>">Close</button>
+                    <a href="/chat/ticket/chatPage/<%= ticket.createdBy %>-<%=ticket._id %>"><button id="<%= ticket.createdBy %>">Chat</button></a>
+                    <!-- <button  id="chat-button" ticket-data=<%= ticket %>>Chat</button> -->
+                    <% } %>
+                        <p class="ticket-status">Status:<%= ticket.status %>
+                        </p>
+        </div>
+    </div>
+

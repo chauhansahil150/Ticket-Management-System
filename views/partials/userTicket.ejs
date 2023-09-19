@@ -1,0 +1,91 @@
+<style>
+    .ticket-container {
+        width: auto;
+        height: 300px;
+        border: 2px solid black;
+        margin: 15px;
+        padding: 7px;
+        font-size: large;
+        background-color: bisque;
+        box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+    }
+
+    .container {
+        display: inline-block;
+    }
+
+    a {
+        text-decoration: none;
+    }
+
+    .ticket-status {
+        float: right;
+        margin: 2px;
+    }
+
+    .status {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center; /* Vertically center align items */
+    }
+
+    /* Style for buttons */
+    .status button {
+        margin-left: 10px;
+        padding: 5px 10px;
+        background-color: #007acc;
+        color: white;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+    }
+
+    .status button:hover {
+        background-color: #0056b3;
+    }
+    .ticket-seen {
+        background-color: rgb(0, 217, 255) !important;
+    }
+</style>
+
+<div class="container" id="<%= ticket._id %>">
+    
+    <div class="<%= (ticket.chat.has_unread_messages == 1 && ticket?.chat?.sender_id==ticket.resolverId)? 'ticket-container ticket-seen' : 'ticket-container' %>" id=" ticket-container ">
+    <!-- <div class="ticket-container " id="ticket-container "> -->
+        <% if(ticket?.chat?.has_unread_messages==1 && ticket?.chat?.sender_id==ticket.resolverId ) { %>
+            <span style="color: red; float: right; font-size: small">You have <%= ticket.chat.unread_messages_length %> unread message</span>
+        <% } %>
+        
+            <p>Title: <%= ticket.title %>
+            </p>
+            <p>Issue Type: <%= ticket.issueType %>
+            </p>
+            <p>Priority: <%= ticket.priority %>
+            </p>
+     
+            <p>Description: <%= ticket.description %>
+            </p>
+     
+            <p>Start Time: <%= ticket.startTime %>
+            </p>
+            <p>End Time: <%= ticket.endTime %>
+            </p>
+        
+       
+        <div class="status">
+            <% if (ticket.status=="pending") { %>
+                <button   id="<%= ticket._id %>">Cancel-Ticket</button>
+            <%} else if(ticket.status=='cancelled') { %>
+            <button  id="<%= ticket._id %>">Delete-Ticket</button>
+            <%} else if(ticket.status=='opened' ) { %>
+                <button id="<%= ticket._id %>">Cancel-Ticket</button>
+                <a href="/chat/ticket/chatPage/<%= ticket.resolverId %>-<%=ticket._id %>-<%= userId%>"><button id="" >Chat</button></a>
+                <% } %>
+                <p class="ticket-status">Status:<%= ticket.status %></p>
+        </div>
+    </div>
+
+</div>
+
+
+

@@ -1,0 +1,48 @@
+
+    .ticket-container {
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-bottom: 10px;
+        background-color: #f9f9f9;
+        width: 100%; /* Ensure each ticket occupies the full width */
+        box-sizing: border-box; /* Include padding within the width */
+    }
+
+    .ticket-container p {
+        margin-bottom: 5px;
+    }
+
+    .ticket-container .issueType {
+        font-weight: bold;
+        color: #007bff; /* Blue color for issue type */
+    }
+
+    .ticket-container .priority {
+        font-weight: bold;
+        color: #e74c3c; /* Red color for priority */
+    }
+
+    .ticket-container .status {
+        display: flex;
+        align-items: center;
+    }
+
+    .ticket-container .status button {
+        padding: 5px 10px;
+        margin-right: 10px;
+        cursor: pointer;
+        background-color: #007bff; /* Blue color for buttons */
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+    }
+
+    .ticket-container .status .ticket-status {
+        font-weight: bold;
+    }
+
+    /* Style for the chat button */
+    .ticket-container .status .chat-button {
+        background-color: #28a745; /* Green color for chat button */
+    }
+
